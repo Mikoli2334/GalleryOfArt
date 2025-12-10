@@ -1,0 +1,6 @@
+@GalleryOfArt.API_HostAddress = http://localhost:5212
+
+GET {{GalleryOfArt.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
