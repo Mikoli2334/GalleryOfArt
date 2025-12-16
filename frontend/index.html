@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Art Gallery</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="gradient-title">Art Gallery</h1>
+      <p class="subtitle">Displaying artworks from our API</p>
+    </header>
+
+    <main>
+      <section class="gallery-section">
+        <div id="gallery" class="gallery-grid"></div>
+        <div id="gallery-empty" class="gallery-empty hidden">No artworks available.</div>
+        <div id="gallery-error" class="gallery-error hidden">Failed to load artworks.</div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

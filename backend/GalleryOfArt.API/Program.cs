@@ -4,9 +4,20 @@ using GalleryOfART.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// читаем переменные окружения (их и так подхватит, но ок)
-builder.Configuration.AddEnvironmentVariables();
 
+builder.Configuration.AddEnvironmentVariables();
+const string FrontendCorsPolicy = "FrontendCors";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(FrontendCorsPolicy, policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:8081") // наш фронтенд
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 // 1. Регистрируем контроллеры, Swagger и сервисы приложения
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -39,7 +50,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseCors(FrontendCorsPolicy);
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
