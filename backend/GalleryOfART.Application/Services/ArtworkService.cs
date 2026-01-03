@@ -64,6 +64,27 @@ namespace GalleryOfART.Application.Services
             .FirstOrDefaultAsync();
             return ImageUrl;
         }
+        public async Task<ArtworkDto?> GetByIdAsync(Guid id)
+        {
+            return await _context.artworks
+                .Where(a => a.id == id)
+                .Select(a => new ArtworkDto
+                {
+                    Id = a.id,
+                    Title = a.title,
+                    YearCreated = a.year_created,
+                    ImageUrl = a.harvard_image,
+                    Artist = a.artist == null ? null : new ArtistDto
+                    {
+                        Id = a.artist.id,
+                        FullName = a.artist.full_name,
+                        BirthYear = a.artist.birth_year,
+                        DeathYear = a.artist.death_year,
+                        ArtworkCount = a.artist.artworks.Count
+                    }
+                })
+                .FirstOrDefaultAsync();
+        }
 
     }
 }

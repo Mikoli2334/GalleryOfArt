@@ -1,0 +1,53 @@
+.page {
+  padding: 24px;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 16px;
+  text-decoration: none;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.bigImg {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
+.right {
+  border-radius: 12px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.h2 {
+  margin: 0 0 16px;
+}
+
+.metaRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.label {
+  opacity: 0.7;
+}
+
+.center {
+  text-align: center;
+  padding: 40px;
+}
+
+.error {
+  color: red;
+}

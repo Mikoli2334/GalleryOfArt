@@ -25,7 +25,7 @@ namespace GalleryOfART.API.Controllers
 
         }
 
-        [HttpGet("{artistId}")]
+        [HttpGet("by-artist/{artistId}")]
         public async Task<ActionResult<IEnumerable<ArtworkDto>>> GetByArtistId(Guid artistId)
         {
             var artworks=await _artworkService.GetByArtistIdAsync(artistId);
@@ -52,6 +52,15 @@ namespace GalleryOfART.API.Controllers
             }
             return Redirect(imageUrl);
         }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ArtworkDto>> GetById(Guid id)
+        {
+            var artwork = await _artworkService.GetByIdAsync(id);
+            if (artwork == null) return NotFound();
+            return Ok(artwork);
+        }
+        
 
     }
 }
