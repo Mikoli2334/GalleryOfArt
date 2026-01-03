@@ -7,6 +7,7 @@ namespace GalleryOfART.Application.Services
 {
     Task<IEnumerable<ArtworkDto>> GetAllAsync();
     Task<IEnumerable<ArtworkDto>> GetByArtistIdAsync(Guid artistId);
+    Task<ArtworkDto?> GetByIdAsync(Guid id);
 
     Task<string?> GetImageUrlAsync(Guid id);
 }
