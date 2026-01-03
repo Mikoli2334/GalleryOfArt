@@ -1,7 +1,11 @@
 FROM node:20-alpine
+
 WORKDIR /app
-COPY frontend/gallery-of-art-ui/package.json .
+
+COPY frontend/gallery-of-art-ui/package.json frontend/gallery-of-art-ui/package-lock.json ./
 RUN npm ci
-COPY frontend/ ./
+
+COPY frontend/gallery-of-art-ui/ ./
+
 EXPOSE 5173
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "5173"]
