@@ -13,7 +13,7 @@ export default function ArtworkDetailsPage() {
     setLoading(true);
     setError(false);
 
-    fetch(`/api/Artworks/${id}`)
+    fetch(`http://localhost:5010/api/Artworks/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();

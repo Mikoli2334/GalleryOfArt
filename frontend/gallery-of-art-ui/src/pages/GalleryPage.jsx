@@ -10,7 +10,7 @@ export default function GalleryPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("/api/Artworks")
+    fetch("http://localhost:5010/api/Artworks")
       .then((res) => {
         if (!res.ok) throw new Error();
         return res.json();

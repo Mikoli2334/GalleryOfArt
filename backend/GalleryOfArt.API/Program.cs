@@ -7,13 +7,31 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // 1. Регистрируем контроллеры, Swagger и сервисы приложения
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
 builder.Services.AddScoped<IArtistService, ArtistService>();
 builder.Services.AddScoped<IArtworkService, ArtworkService>();
+
+
+
+
+
 
 // 2. Собираем connection string ОДИН РАЗ
 var host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost";
@@ -39,8 +57,11 @@ var app = builder.Build();
     app.UseSwaggerUI();
 
 
+
+app.UseCors("DevCors");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+
 
 app.Run();
