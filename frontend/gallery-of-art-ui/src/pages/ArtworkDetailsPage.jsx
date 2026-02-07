@@ -1,57 +1,73 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import "./ArtworkDetailsPage.css";
 
 export default function ArtworkDetailsPage() {
   const { id } = useParams();
+
+  const apiBase = useMemo(() => {
+    const raw = import.meta.env.VITE_API_BASE_URL || "";
+    return raw.replace(/\/+$/, ""); // убираем хвостовые /
+  }, []);
+
   const [artwork, setArtwork] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setLoading(true);
-    setError(false);
+    if (!apiBase) {
+      setError("VITE_API_BASE_URL is not set");
+      setLoading(false);
+      return;
+    }
 
-    fetch(`http://localhost:5010/api/Artworks/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        setArtwork(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
-  }, [id]);
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const res = await fetch(`${apiBase}/api/Artworks/${id}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        if (!cancelled) setArtwork(data);
+      } catch (e) {
+        if (!cancelled) setError("Failed to load artwork");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [apiBase, id]);
 
   if (loading) return <p className="center">Loading…</p>;
-  if (error || !artwork)
+
+  if (error || !artwork) {
     return (
       <div className="page">
-        <Link to="/" className="back">
-          ← Back
-        </Link>
-        <p className="error">Failed to load artwork</p>
+        <Link to="/" className="back">← Back</Link>
+        <p className="error">{error || "Failed to load artwork"}</p>
       </div>
     );
+  }
 
-  const artist = artwork.artist?.fullName;
+  const artistName = artwork.artist?.fullName ?? "—";
 
   return (
     <div className="page">
-      <Link to="/" className="back">
-        ← Back to gallery
-      </Link>
+      <Link to="/" className="back">← Back to gallery</Link>
 
       <div className="layout">
         <div className="left">
           <img
             className="bigImg"
-            src={`/api/Artworks/image/${artwork.id}`}
+            src={`${apiBase}/api/Artworks/image/${artwork.id}`}
             alt={artwork.title || "Artwork"}
           />
         </div>
@@ -66,7 +82,7 @@ export default function ArtworkDetailsPage() {
 
           <div className="metaRow">
             <span className="label">Artist</span>
-            <span>{artist ?? "—"}</span>
+            <span>{artistName}</span>
           </div>
 
           {artwork.artist && (

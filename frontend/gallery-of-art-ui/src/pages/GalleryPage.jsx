@@ -1,32 +1,53 @@
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./GalleryPage.css";
 
 export default function GalleryPage() {
-  const [artworks, setArtworks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch("http://localhost:5010/api/Artworks")
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        setArtworks(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+  const apiBase = useMemo(() => {
+    const raw = import.meta.env.VITE_API_BASE_URL || "";
+    return raw.replace(/\/+$/, "");
   }, []);
 
+  const [artworks, setArtworks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!apiBase) {
+      setError("VITE_API_BASE_URL is not set");
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    async function load() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const res = await fetch(`${apiBase}/api/Artworks`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        if (!cancelled) setArtworks(Array.isArray(data) ? data : []);
+      } catch (e) {
+        if (!cancelled) setError("Failed to load artworks");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [apiBase]);
+
   if (loading) return <p className="center">Loading artworks…</p>;
-  if (error) return <p className="center error">Failed to load artworks</p>;
+  if (error) return <p className="center error">{error}</p>;
 
   return (
     <div className="page">
@@ -37,14 +58,15 @@ export default function GalleryPage() {
           <button
             key={a.id}
             className="card"
-            onClick={() => navigate(`/artworks/${a.id}`)}
             type="button"
+            onClick={() => navigate(`/artworks/${a.id}`)}
           >
             <div className="imgWrap">
               <img
                 className="img"
-                src={`/api/Artworks/image/${a.id}`}
+                src={`${apiBase}/api/Artworks/image/${a.id}`}
                 alt={a.title || "Artwork"}
+                loading="lazy"
               />
             </div>
 
